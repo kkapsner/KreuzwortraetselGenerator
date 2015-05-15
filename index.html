@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Kreuzwortr&auml;tsel-Generator v. 0.0.1</title>
+<link type="text/css" rel="stylesheet" href="main.css">
+<script type="text/javascript" src="/kkjs/modules/kkjs.load.js?modules=EventEmitter,NodeRepresentator,random,cookie"></script>
+<script type="text/javascript" src="Grid.js"></script>
+<script type="text/javascript" src="setup.js"></script>
+</head>
+<body>
+<h1>Kreuzwortr&auml;tsel-Generator</h1>
+<section>
+	<h1>Eingaben</h1>
+	<table>
+		<thead>
+			<tr>
+				<th>Fragen</th><th>Antworten</th><th><button id="addQuestion">+</button></th>
+			</tr>
+		</thead>
+		<tbody id="questions"></tbody>
+	</table>
+	L&ouml;sungswort: <input id="solution"> <button id="placeSolution" disabled>neu platzieren</button><br>
+	<button id="generate">generieren</button>
+</section>
+<section>
+	<h1>Kreuzwortr&auml;tsel</h1>
+	<label>L&ouml;sung anzeigen <input type="checkbox" id="displayAnswer"></label>
+	<div id="schema"><i>noch kein R&auml;tsel erzeugt.</i></div>
+</section>
+</html>
