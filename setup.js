@@ -125,7 +125,7 @@ kkjs.event.onWindowLoad(function(){
 		});
 		
 		
-		kkjs.$("placeSolution").disabled = !lastGrid;
+		kkjs.$("placeSolution").disabled =  !lastGrid;
 		if (lastGrid){
 			lastGrid.trim();
 			placeSolution();
@@ -144,11 +144,20 @@ kkjs.event.onWindowLoad(function(){
 			});
 		}
 		else {
+			kkjs.$("downloadImage").href = "";
 			alert("Kein zusammneh\xE4ngendes R\xE4tsel m\xF6glich.");
 		}
 	}
 	
 	kkjs.event.add(kkjs.$("generate"), "click", generate);
+	kkjs.event.add(kkjs.$("downloadImage"), "mouseover", function(){
+		if (lastGrid){
+			this.href = Grid.tableToCanvas(kkjs.$("schema").firstChild).toDataURL();
+		}
+		else {
+			this.removeAttribute("href");
+		}
+	});
 	kkjs.event.add(kkjs.$("placeSolution"), "click", placeSolution);
 	kkjs.event.add(kkjs.$("addQuestion"), "click", function(){addQuestion();});
 	

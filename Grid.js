@@ -333,5 +333,90 @@ var Grid = kkjs.NodeRepresentator.extend(function Grid(size){
 		recursion(grid, questions.slice(1));
 		
 		return bestGrid;
-	}
+	},
+	tableToCanvas: function(table){
+		var cellSize = table.rows[0].cells[0].offsetWidth;
+		var thinStroke = 2;
+		var thickStroke = 4;
+		
+		function p(x){
+			return x * cellSize + thickStroke / 2;
+		}
+		function border(x, y, side){
+			var x1, x2, y1, y2;
+			switch (side){
+				case "top"   : x1 = x; y1 = y; x2 = x + 1; y2 = y; break;
+				case "left"  : x1 = x + 1; y1 = y; x2 = x + 1; y2 = y + 1; break;
+				case "bottom": x1 = x; y1 = y + 1; x2 = x + 1; y2 = y + 1; break;
+				case "right" : x1 = x; y1 = y; x2 = x; y2 = y + 1; break;
+			}
+			context.beginPath();
+			context.moveTo(p(x1), p(y1));
+			context.lineTo(p(x2), p(y2));
+			context.stroke();
+		}
+		function drawNodeText(node, x, y, xOffset, yOffset){
+			var text = node.textContent.trim();
+			if (text){
+				var oldFill = context.fillStyle;
+				context.font = kkjs.css.get(node, "font");
+				context.fillStyle = kkjs.css.get(node, "color");
+				context.fillText(text, p(x) + (xOffset || 0), p(y) + (yOffset || 0));
+				context.fillStyle = oldFill;
+			}
+		}
+		function drawCell(cell, x, y){
+			context.font = kkjs.css.get(cell, "font");
+			context.lineWidth = thinStroke;
+			if (kkjs.css.className.has(cell, "solution")){
+				context.fillStyle = "#AAAAAA";
+				context.fillRect(p(x), p(y), cellSize, cellSize);
+				context.fillStyle = "black";
+			}
+			if (kkjs.css.className.has(cell, "filled")){
+				context.strokeRect(p(x), p(y), cellSize, cellSize);
+			}
+			context.lineWidth = thickStroke;
+			var down = kkjs.css.className.has(cell, "directionDown");
+			var right = kkjs.css.className.has(cell, "directionRight");
+			if (kkjs.css.className.has(cell, "directionDownStart") || (right && !down)){
+				border(x, y, "top");
+			}
+			if (kkjs.css.className.has(cell, "directionRightStart") || (!right && down)){
+				border(x, y, "right");
+			}
+			if (kkjs.css.className.has(cell, "directionDownEnd") || (right && !down)){
+				border(x, y, "bottom");
+			}
+			if (kkjs.css.className.has(cell, "directionRightEnd") || (!right && down)){
+				border(x, y, "left");
+			}
+			context.textAlign = "center";
+			context.textBaseline = "middle";
+			if (kkjs.css.get(cell.nodes[0], "display") !== "none"){
+				drawNodeText(cell.nodes[0],x + 0.5, y + 0.5);
+			}
+			else {
+				drawNodeText(cell.nodes[3], x + 0.5,y + 0.5);
+			}
+			context.textAlign = "left";
+			drawNodeText(cell.nodes[1], x, y + 0.5, 1);
+			context.textAlign = "center";
+			context.textBaseline = "top";
+			drawNodeText(cell.nodes[2], x + 0.5, y, 0, 1);
+		}
+		var canvas = kkjs.node.create({
+			tag: "canvas",
+			height: table.rows.length * cellSize + thickStroke,
+			width: table.rows[0].cells.length * cellSize + thickStroke,
+		});
+		var context = canvas.getContext("2d");
+		context.lineCap = "round";
+		[].forEach.call(table.rows, function(row, y){
+			[].forEach.call(row.cells, function(cell, x){
+				drawCell(cell, x, y);
+			});
+		});
+		return canvas;
+	},
 });
