@@ -158,6 +158,34 @@ kkjs.event.onWindowLoad(function(){
 			this.removeAttribute("href");
 		}
 	});
+	kkjs.event.add(kkjs.$("downloadImage"), "click", function(ev){
+		if (kkjs.is.ie || navigator.userAgent.indexOf("Trident") !== -1){
+			var form = kkjs.node.create({
+				tag: "form",
+				action: "http://bounce.kkapsner.de/echoToDownload.php",
+				method: "POST",
+				target: "_blank",
+				childNodes: [
+					{
+						tag: "input",
+						type: "hidden",
+						name: "dataURL",
+						value: this.href
+					},
+					{
+						tag: "input",
+						type: "hidden",
+						name: "filename",
+						value: "grid.png"
+					}
+				],
+				parentNode: document.body
+			});
+			form.submit();
+			kkjs.node.remove(form);
+			ev.preventDefault();
+		}
+	});
 	kkjs.event.add(kkjs.$("placeSolution"), "click", placeSolution);
 	kkjs.event.add(kkjs.$("addQuestion"), "click", function(){addQuestion();});
 	
