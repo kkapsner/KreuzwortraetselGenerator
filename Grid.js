@@ -42,6 +42,9 @@ var Grid = kkjs.NodeRepresentator.extend(function Grid(size){
 	
 	this.boundingBox = new kkjs.Math.Range2D(Math.floor(size.width/2), Math.floor(size.width/2), Math.floor(size.height/2), Math.floor(size.height/2));
 }).implement({
+	toJSON: function(){
+		return {size: this.size, words: this.words, solution: this.solution};
+	},
 	setField: function setField(value, pos, direction){
 		this.boundingBox.expand(pos);
 		if (this.data[pos.x][pos.y] !== value){
@@ -51,13 +54,21 @@ var Grid = kkjs.NodeRepresentator.extend(function Grid(size){
 		switch (direction){
 			case DIRECTION_DOWN:
 				this.directions[pos.x][pos.y] &= ~DIRECTION_DOWN;
-				this.directions[pos.x - 1][pos.y] &= ~DIRECTION_DOWN;
-				this.directions[pos.x + 1][pos.y] &= ~DIRECTION_DOWN;
+				if (this.directions[pos.x - 1]){
+					this.directions[pos.x - 1][pos.y] &= ~DIRECTION_DOWN;
+				}
+				if (this.directions[pos.x + 1]){
+					this.directions[pos.x + 1][pos.y] &= ~DIRECTION_DOWN;
+				}
 				break;
 			case DIRECTION_RIGHT:
 				this.directions[pos.x][pos.y] &= ~DIRECTION_RIGHT;
-				this.directions[pos.x][pos.y - 1] &= ~DIRECTION_RIGHT;
-				this.directions[pos.x][pos.y + 1] &= ~DIRECTION_RIGHT;
+				if (typeof this.directions[pos.x][pos.y - 1] !== "undefined"){
+					this.directions[pos.x][pos.y - 1] &= ~DIRECTION_RIGHT;
+				}
+				if (typeof this.directions[pos.x][pos.y + 1] !== "undefined"){
+					this.directions[pos.x][pos.y + 1] &= ~DIRECTION_RIGHT;
+				}
 				break;
 		}
 	},
@@ -137,16 +148,24 @@ var Grid = kkjs.NodeRepresentator.extend(function Grid(size){
 					pos1.x = pos.x + x;
 					this.setField(word[x], pos1, direction);
 				}
-				this.directions[pos.x - 1][pos.y] = 0;
-				this.directions[pos.x + l][pos.y] = 0;
+				if (this.directions[pos.x - 1]){
+					this.directions[pos.x - 1][pos.y] = 0;
+				}
+				if (this.directions[pos.x + l]){
+					this.directions[pos.x + l][pos.y] = 0;
+				}
 				break;
 			case DIRECTION_DOWN:
 				for (var y = 0; y < l; y++){
 					pos1.y = pos.y + y;
 					this.setField(word[y], pos1, direction);
 				}
-				this.directions[pos.x][pos.y - 1] = 0;
-				this.directions[pos.x][pos.y + l] = 0;
+				if (typeof this.directions[pos.x][pos.y - 1] !== "undefined"){
+					this.directions[pos.x][pos.y - 1] = 0;
+				}
+				if (typeof this.directions[pos.x][pos.y + l] !== "undefined"){
+					this.directions[pos.x][pos.y + l] = 0;
+				}
 				break;
 		}
 		if (typeof number !== "undefined"){
@@ -291,6 +310,16 @@ var Grid = kkjs.NodeRepresentator.extend(function Grid(size){
 		})
 	}
 }).implementStatic({
+	fromObject: function(obj){
+		var grid = new Grid(new kkjs.Math.Dimension(obj.size.width, obj.size.height));
+		obj.words.forEach(function(word, i){
+			grid.setWord(word.str, new kkjs.Math.Vector2D(word.position.x, word.position.y), word.direction, i);
+		});
+		grid.solution = obj.solution.map(function(pos){
+			return new kkjs.Math.Vector2D(pos.x, pos.y);
+		});
+		return grid;
+	},
 	normalizeWord: function(word){
 		return word.toLowerCase().replace(/\xE4/g, "ae").replace(/\xF6/g, "oe").replace(/\xFC/g, "ue").replace(/\xDF/g, "ss").replace(/[^a-z]/g, "");
 	},

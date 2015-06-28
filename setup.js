@@ -51,6 +51,11 @@ function removeQuestion(row){
 	kkjs.node.remove(row);
 	lastQuestionRow = questionsNode.rows[questionsNode.rows.length - 1];
 }
+function removeAllQuestions(){
+	while (questionsNode.rows.length){
+		removeQuestion(questionsNode.rows[0]);
+	}
+}
 var getQuestions = function getQuestions(filter){
 	var questionNodes = kkjs.css.$("input[name^=question]", {node: questionsNode});
 	var questions = kkjs.css.$("input[name^=answer]", {node: questionsNode}).map(function(node, i){
@@ -150,6 +155,48 @@ kkjs.event.onWindowLoad(function(){
 	}
 	
 	kkjs.event.add(kkjs.$("generate"), "click", generate);
+	
+	kkjs.event.add(kkjs.$("save"), "click", function(){
+		if (lastGrid){
+			var data = {
+				grid: lastGrid,
+				questions: getQuestions(),
+				solution: kkjs.$("solution").value
+			};
+			kkjs.localFile.save("crossword.json", JSON.stringify(data), "application/json");
+		}
+	});
+	function loadFilePromiseCallback(){
+		var data = JSON.parse(this.content);
+		removeAllQuestions();
+		
+		kkjs.$("solution").value = data.solution;
+		data.questions.forEach(function(q){
+			addQuestion(q.question, q.answer);
+		});
+		
+		lastGrid = Grid.fromObject(data.grid);
+		kkjs.node.clear(kkjs.$("schema"));
+		kkjs.$("placeSolution").disabled =  !lastGrid;
+		
+		kkjs.$("schema").appendChild(lastGrid.createNode());
+		var list = kkjs.node.create({
+			tag: "ol",
+			parentNode: kkjs.$("schema")
+		});
+		data.questions.forEach(function(q){
+			kkjs.node.create({
+				tag: "li",
+				parentNode: list,
+				childNodes: [q.question]
+			});
+		});
+	}
+	kkjs.event.add(kkjs.$("load"), "click", function(){
+		kkjs.localFile.load(loadFilePromiseCallback);
+	});
+	kkjs.localFile.enableFileDrop(document, loadFilePromiseCallback);
+	
 	kkjs.event.add(kkjs.$("downloadImage"), "mouseover", function(){
 		if (lastGrid){
 			this.href = Grid.tableToCanvas(kkjs.$("schema").firstChild).toDataURL();
