@@ -205,31 +205,10 @@ kkjs.event.onWindowLoad(function(){
 			this.removeAttribute("href");
 		}
 	});
+	kkjs.localFile.bounce.URL = "http://bounce.kkapsner.de/echoToDownload.php";
 	kkjs.event.add(kkjs.$("downloadImage"), "click", function(ev){
-		if (kkjs.is.ie || navigator.userAgent.indexOf("Trident") !== -1){
-			var form = kkjs.node.create({
-				tag: "form",
-				action: "http://bounce.kkapsner.de/echoToDownload.php",
-				method: "POST",
-				target: "_blank",
-				childNodes: [
-					{
-						tag: "input",
-						type: "hidden",
-						name: "dataURL",
-						value: this.href
-					},
-					{
-						tag: "input",
-						type: "hidden",
-						name: "filename",
-						value: "grid.png"
-					}
-				],
-				parentNode: document.body
-			});
-			form.submit();
-			kkjs.node.remove(form);
+		if ((kkjs.is && kkjs.is.ie) || navigator.userAgent.indexOf("Trident") !== -1){
+			kkjs.localFile.save("grid.png", {dataURL: this.href});
 			ev.preventDefault();
 		}
 	});
