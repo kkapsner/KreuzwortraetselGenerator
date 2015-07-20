@@ -7,6 +7,7 @@ var addQuestion = function _addQuestion(question, answer){
 		tag: "tr",
 		parentNode: questionsNode,
 		childNodes: [
+			{tag: "td", childNodes: [{tag: "span", innerHTML: "&#x2195", className: "handle"}]},
 			{tag: "td", childNodes: [{tag: "input", name: "question[]", value: question}]},
 			{tag: "td", childNodes: [{tag: "input", name: "answer[]", value: answer}]}
 		]
@@ -46,6 +47,8 @@ var addQuestion = function _addQuestion(question, answer){
 			}
 		}]
 	});
+	kkjs.sortable.dragNDrop.unset(questionsNode);
+	kkjs.sortable.dragNDrop.set(questionsNode, {handleSelector: "span.handle"});
 }.setDefaultParameter("", "");
 function removeQuestion(row){
 	kkjs.node.remove(row);
@@ -73,7 +76,6 @@ var getQuestions = function getQuestions(filter){
 }.setDefaultParameter(true);
 
 kkjs.event.onWindowLoad(function(){
-	questionsNode = kkjs.$("questions");
 	
 	
 	var lastGrid;
@@ -135,7 +137,6 @@ kkjs.event.onWindowLoad(function(){
 			lastGrid.trim();
 			placeSolution();
 			
-			kkjs.$("schema").appendChild(lastGrid.createNode());
 			var list = kkjs.node.create({
 				tag: "ol",
 				parentNode: kkjs.$("schema")
@@ -147,6 +148,7 @@ kkjs.event.onWindowLoad(function(){
 					childNodes: [q.question]
 				});
 			});
+			kkjs.$("schema").appendChild(lastGrid.createNode());
 		}
 		else {
 			kkjs.$("downloadImage").href = "";
@@ -213,15 +215,55 @@ kkjs.event.onWindowLoad(function(){
 		}
 	});
 	kkjs.event.add(kkjs.$("placeSolution"), "click", placeSolution);
+	kkjs.event.add(kkjs.$("solution"), "input", function(){
+		var display = kkjs.$("solutionDisplay");
+		kkjs.node.clear(display);
+		var solution = Grid.normalizeWord(this.value, true);
+		var normalisedSolution = Grid.normalizeWord(this.value);
+		
+		var start = true;
+		for (var idx = 0, nIdx = 0; idx < solution.length; idx += 1){
+			if (solution[idx] === normalisedSolution[nIdx]){
+				kkjs.node.create({
+					tag: "span",
+					parentNode: display,
+					className: "char" + (start? " start": ""),
+					childNodes: [
+						{
+							tag: "span",
+							className: "number",
+							childNodes: (nIdx + 1).toString()
+						},
+						{
+							tag: "span",
+							className: "answer",
+							childNodes: solution[idx]
+						}
+					]
+				});
+				nIdx += 1;
+				start = false;
+			}
+			else {
+				kkjs.node.create({
+					tag: "span",
+					parentNode: display,
+					childNodes: solution[idx]
+				});
+				start = true;
+			}
+		}
+	}).fireEvent("input");
 	kkjs.event.add(kkjs.$("addQuestion"), "click", function(){addQuestion();});
 	
 	kkjs.event.add(kkjs.$("displayAnswer"), ["change", "click"], function(){
 		kkjs.css.className[this.checked? "add": "remove"](kkjs.$("schema"), "answered");
-	});
-	kkjs.event.fireOwn(kkjs.$("displayAnswer"), {type: "click"});
+		kkjs.css.className[this.checked? "add": "remove"](kkjs.$("solutionDisplay"), "answered");
+	}).fireEvent("click");
 });
 
 kkjs.event.onWindowLoad(function(){
+	questionsNode = kkjs.$("questions");
 	kkjs.$("solution").value = kkjs.cookie.getValue("crosswordSolution");
 	var data = kkjs.cookie.getValue("crosswordData");
 	if (data){

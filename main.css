@@ -1,3 +1,7 @@
+#questions .handle {
+	cursor: ns-resize;
+}
+
 table {
 	border-spacing: 0;
 	border-collapse: collapse;
@@ -105,4 +109,46 @@ section h1 {
 
 aside {
 	clear: both;
+}
+
+#solutionDisplay {
+	margin: 0px 0px 0.5em;
+}
+#solutionDisplay span {
+	display: inline-block;
+	min-width: 1em;
+	line-height: 2em;
+	text-align: center;
+	height: 2em;
+	vertical-align: middle;
+}
+#solutionDisplay .char {
+	width: 2em;
+	height: 2em;
+	border: 1px solid black;
+	border-left-width: 0px;
+	margin: 0px;
+	position: relative;
+}
+#solutionDisplay .char.start {
+	border-left-width: 1px;
+}
+#solutionDisplay .char .number {
+	position: absolute;
+	font-size: 90%;
+	font-weight: bold;
+	display: block;
+	overflow: visible;
+	left: 1px;
+	top: 1px;
+	height: 0;
+	line-height: 1em;
+	min-width: 0;
+}
+#solutionDisplay .answer {
+	display: none;
+	vertical-align: baseline;
+}
+#solutionDisplay.answered .answer {
+	display: inherit;
 }

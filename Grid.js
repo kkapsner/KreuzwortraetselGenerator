@@ -320,8 +320,12 @@ var Grid = kkjs.NodeRepresentator.extend(function Grid(size){
 		});
 		return grid;
 	},
-	normalizeWord: function(word){
-		return word.toLowerCase().replace(/\xE4/g, "ae").replace(/\xF6/g, "oe").replace(/\xFC/g, "ue").replace(/\xDF/g, "ss").replace(/[^a-z]/g, "");
+	normalizeWord: function(word, keepWrong){
+		word = word.toLowerCase().replace(/\xE4/g, "ae").replace(/\xF6/g, "oe").replace(/\xFC/g, "ue").replace(/\xDF/g, "ss");
+		if (!keepWrong){
+			word = word.replace(/[^a-z]/g, "");
+		}
+		return word;
 	},
 	create: function(questions){
 		var maxSize = questions.reduce(function(r, question){return r + Grid.normalizeWord(question.answer).length;}, 0) + 2;
