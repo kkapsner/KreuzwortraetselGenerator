@@ -69,6 +69,7 @@ td.filled .wordNumber {
 	line-height: 75%;
 	display: block;
 	overflow: visible;
+	z-Index: 10;
 }
 td.filled .wordNumber.horizontal {
 	left: 0;
