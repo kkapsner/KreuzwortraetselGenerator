@@ -93,6 +93,9 @@ td.filled.solution {
 #schema.answered .answer {
 	display: inherit;
 }
+#schema.hideNumbers .wordNumber {
+	display: none;
+}
 #schema table, #schema ol {
 	display: inline-block;
 	vertical-align: middle;

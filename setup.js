@@ -281,6 +281,10 @@ kkjs.event.onWindowLoad(function(){
 		kkjs.css.className[this.checked? "add": "remove"](kkjs.$("schema"), "answered");
 		kkjs.css.className[this.checked? "add": "remove"](kkjs.$("solutionDisplay"), "answered");
 	}).fireEvent("click");
+	
+	kkjs.event.add(kkjs.$("hideNumbers"), ["change", "click"], function(){
+		kkjs.css.className[this.checked? "add": "remove"](kkjs.$("schema"), "hideNumbers");
+	}).fireEvent("click");
 });
 
 // cookie storage
