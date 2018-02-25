@@ -285,7 +285,7 @@ var Grid = kkjs.NodeRepresentator.extend(function Grid(size){
 					kkjs.css.className.add(row.cells[x0 + l - 1], "directionRightEnd");
 					for (var x = 0; x < l; x++){
 						var cell = row.cells[x0 + x];
-						cell.nodes[0].innerHTML = word.str[x];
+						cell.nodes[0].innerHTML = word.str[x].toUpperCase();
 						kkjs.css.className.add(cell, "directionRight filled");
 					}
 					break;
@@ -296,7 +296,7 @@ var Grid = kkjs.NodeRepresentator.extend(function Grid(size){
 					kkjs.css.className.add(node.rows[y0 + l - 1].cells[x], "directionDownEnd");
 					for (var y = 0; y < l; y++){
 						var cell = node.rows[y0 + y].cells[x];
-						cell.nodes[0].innerHTML = word.str[y];
+						cell.nodes[0].innerHTML = word.str[y].toUpperCase();
 						kkjs.css.className.add(cell, "directionDown filled");
 					}
 					break;
@@ -432,11 +432,15 @@ var Grid = kkjs.NodeRepresentator.extend(function Grid(size){
 			else {
 				drawNodeText(cell.nodes[3], x + 0.5,y + 0.5);
 			}
-			context.textAlign = "left";
-			drawNodeText(cell.nodes[1], x, y + 0.5, 1);
-			context.textAlign = "center";
-			context.textBaseline = "top";
-			drawNodeText(cell.nodes[2], x + 0.5, y, 0, 1);
+			if (kkjs.css.get(cell.nodes[1], "display") !== "none"){
+				context.textAlign = "left";
+				drawNodeText(cell.nodes[1], x, y + 0.5, 1);
+			}
+			if (kkjs.css.get(cell.nodes[2], "display") !== "none"){
+				context.textAlign = "center";
+				context.textBaseline = "top";
+				drawNodeText(cell.nodes[2], x + 0.5, y, 0, 1);
+			}
 		}
 		var canvas = kkjs.node.create({
 			tag: "canvas",
